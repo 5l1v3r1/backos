@@ -17,7 +17,7 @@ import json
 import string
 import random
 import re
-import db
+import sqlite3
 FN = ""
 class S(BaseHTTPRequestHandler):
 
@@ -49,15 +49,15 @@ class S(BaseHTTPRequestHandler):
         content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
         post_data = self.rfile.read(content_length) # <--- Gets the data itself
         self._set_headers()
-        print(type(post_data))
+        #print(type(post_data))
         data = json.loads(post_data)
-        print(post_data)
+        #print(post_data)
         global FN
         if "fn" in data:
             FN = data["fn"]
-            print(data["fn"]);
+            #print(data["fn"]);
         else:
-            print("fn:" + FN)
+            #print("fn:" + FN)
             if(len(FN)>0):
                 self.write_to_file(FN,data["html"])
         self.wfile.write(post_data)
@@ -72,6 +72,7 @@ class S(BaseHTTPRequestHandler):
         f.close();
         pass
     def addtage(self,html):
+        '''
     	tags = {
         " c ":["/category/czuoyedaixie/","C语言代写 C++代写 代写C++ 代做C"],
         "java":["/category/java/","java代写 代写java "],
@@ -150,20 +151,36 @@ class S(BaseHTTPRequestHandler):
         "Artificial Intelligence":["/category/aizuoyedaixie/","AI代写 代做机器学习 ai代做 machine learning代写 ML代做"],
         "app":["/tag/app代写/","app代写 代写app 移动开发"],
 
-        }
-    	somestrs = ["","代写","代做","作业","代写","代做",""]
-    	keys=[]
-    	for key in tags:
-    		if re.search(re.escape(key+" "),html,re.IGNORECASE):
-    			reg = re.compile(re.escape(key+" "), re.IGNORECASE)
-    			tmp = '<a href=\"'+ tags[key][0]+'\" title=\"'+ tags[key][1]+'\"> '+ key+' </a>'	#'<a href=\"'+ tags[key][0]+'\" title=\"'+ tags[key][1]+'\">'+ key+'</a>'
-    			html = reg.sub(tmp,html,1)
-    			if random.randint(0,1) == 0:
-    				keys.append(string.capwords(key)+str(somestrs[random.randint(0,len(somestrs)-1)]))
-    			else:
-    				keys.append(str(somestrs[random.randint(0,len(somestrs)-1)]) + string.capwords(key))
-    	print("|".join(keys))
-    	return html,(" | ".join(keys))
+        }'''
+        conn = sqlite3.connect('../../sendWP.db')
+        cursor = conn.cursor()
+        cursor.execute('select * from pdftags')
+        values = cursor.fetchall()
+        #print values
+        tags = {}
+        for item in values:
+            tags[item[1]] = [item[2],item[3]]
+            #print tags
+            #break
+        cursor.close()
+        somestrs = ["","代写","代做","作业","代写","代做",""]
+        keys=[]
+        for key in tags:
+            if re.search(re.escape(key+" "),html,re.IGNORECASE):
+                reg = re.compile(re.escape(key+" "), re.IGNORECASE)
+                tmp = '<a href=\"'+ tags[key][0]+'\" title=\"'+ tags[key][1]+'\"> '+ key+' </a>'	#'<a href=\"'+ tags[key][0]+'\" title=\"'+ tags[key][1]+'\">'+ key+'</a>'
+                html = reg.sub(tmp,html,1)
+                if random.randint(0,1) == 0:
+                    print(key)
+                    print(string.capwords(key))
+                    keys.append(string.capwords(key))
+                    #keys.append(string.capwords(key)+str(somestrs[random.randint(0,len(somestrs)-1)]))
+                else:
+                    keys.append(string.capwords(key))
+                    print(str(somestrs[random.randint(0,len(somestrs)-1)]))
+                    #keys.append(str(somestrs[random.randint(0,len(somestrs)-1)]) + string.capwords(key))
+        print("|".join(keys))
+        return html,(" | ".join(keys))
 
 def run(server_class=HTTPServer, handler_class=S, port=6001):
     server_address = ('', port)
@@ -173,15 +190,8 @@ def run(server_class=HTTPServer, handler_class=S, port=6001):
 
 if __name__ == "__main__":
     from sys import argv
-    pass
-    user = db.User('../../sendWP.db')
-    cursor =  user.select(['pdftags'],["id"])
-    print cursor.fetchall()
-    cursor.close()
     #print("123")
-    '''
     if len(argv) == 2:
         run(port=int(argv[1]))
     else:
         run()
-    '''
