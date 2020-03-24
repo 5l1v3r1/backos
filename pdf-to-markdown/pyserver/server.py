@@ -17,6 +17,7 @@ import json
 import string
 import random
 import re
+import db
 FN = ""
 class S(BaseHTTPRequestHandler):
 
@@ -172,8 +173,15 @@ def run(server_class=HTTPServer, handler_class=S, port=6001):
 
 if __name__ == "__main__":
     from sys import argv
-
+    pass
+    user = db.User('../../sendWP.db')
+    cursor =  user.select(['pdftags'],["id"])
+    print cursor.fetchall()
+    cursor.close()
+    #print("123")
+    '''
     if len(argv) == 2:
         run(port=int(argv[1]))
     else:
         run()
+    '''
