@@ -18,6 +18,8 @@ import string
 import random
 import re
 import sqlite3
+import sys
+
 FN = ""
 class S(BaseHTTPRequestHandler):
 
@@ -153,6 +155,7 @@ class S(BaseHTTPRequestHandler):
 
         }'''
         conn = sqlite3.connect('../../sendWP.db')
+        conn.text_factory = str
         cursor = conn.cursor()
         cursor.execute('select * from pdftags')
         values = cursor.fetchall()
@@ -173,12 +176,12 @@ class S(BaseHTTPRequestHandler):
                 if random.randint(0,1) == 0:
                     print(key)
                     print(string.capwords(key))
-                    keys.append(string.capwords(key))
-                    #keys.append(string.capwords(key)+str(somestrs[random.randint(0,len(somestrs)-1)]))
+                    #keys.append(string.capwords(key))
+                    keys.append(string.capwords(key)+str(somestrs[random.randint(0,len(somestrs)-1)]))
                 else:
                     keys.append(string.capwords(key))
-                    print(str(somestrs[random.randint(0,len(somestrs)-1)]))
-                    #keys.append(str(somestrs[random.randint(0,len(somestrs)-1)]) + string.capwords(key))
+                    #print(str(somestrs[random.randint(0,len(somestrs)-1)]))
+                    keys.append(str(somestrs[random.randint(0,len(somestrs)-1)]) + string.capwords(key))
         print("|".join(keys))
         return html,(" | ".join(keys))
 

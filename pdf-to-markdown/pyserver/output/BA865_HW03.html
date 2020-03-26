@@ -1,0 +1,104 @@
+<blockquote><p><i class="fa fa-tags" aria-hidden="true"></i> Network | 代写Network | Assignment | 代做Assignment | Ios | 代做Ios | Machine Learning - </p></blockquote>
+<h3>TITLE</h3>
+<h3>HW 03 - Create a word2vec model</h3>
+<h5>Before you submit this assignment, please carefully read these submission</h5>
+<h5>instructions. You must name this .ipynb file:</h5>
+<h5>yourlastname_yourfirstname_HW3.ipynb</h5>
+<h5>You must turn in this <a href="/category/assignmentzuoyedaixie/" title="ass代做 assignment代写 代写assignment"> assignment </a>by uploading the .ipynb file to the assignment on</h5>
+<h5>questrom tools. You will also need to print out a hard copy of this notebook (File-</h5>
+<h5>&gt;Print from colab) with the output from running all the code cells, and hand it in on</h5>
+<h5>the class following the due date. Do not email me the file.</h5>
+<h5>Points will be deducted for improper submission!</h5>
+<p>For this assignment, we will use Pytorch to create a word2vec model that infers numerical vectors for words that capture their meaning. Word2vec was first introduced in 2013 by Mikolov et al. at Google. Their paper can be found here (https://arxiv.org/pdf/1301.3781.pdf), though you do not need to read and understand it in order to implement the model. It is a very popular <a href="/category/machinelearningdaixie/" title="机器学习代写 代做机器学习 ai代做 machine learning代写 ML代做"> Machine learning </a>model that has been implemented to capture the meaning of text for many real world cases.</p>
+<p>This blog post (https://blog.acolyer.org/2016/04/21/the-amazing-power-of-word-vectors/) is a great overview of word2vec. Please read it carefully before you create the word2vec model for this assignment. Specifically, you will build a &quot;Continuous Bag-of-Words Model (CBOW)&quot; word2vec model. CBOW predicts a focal (target) word from its context (the words surround it). The following Youtube videos also explain the concept of the CBOW model.</p>
+<pre><code>https://www.youtube.com/watch?v=UqRCEmrv1gQ (https://www.youtube.com/watch?
+v=UqRCEmrv1gQ)
+https://www.youtube.com/watch?v=gQddtTdmG_8 (https://www.youtube.com/watch?
+v=gQddtTdmG_8)
+</code></pre>
+<p>Your task is to create a CBOW neural <a href="/category/networkzuoyedaixie/" title="network代写 代写计算机网络"> Network </a>model class called CBOW. CBOW has the structure shown above and the following properties:</p>
+<pre><code>vocab_size - Size of vocabulary( ). Note that vocabulary is a set of unique words in a corpus (a
+bunch of text documents).
+embed_dim - Dimension of the embedding vector
+window_size - Size of window. If a focal word is at position , then the CBOW model uses
+embedding vectors of words between (-window_size) and (+window_size) to predict the focal word
+hidden_dim - Dimension of the hidden layer ( )
+</code></pre>
+<pre><code>CBOW consists of three layers:
+</code></pre>
+<pre><code>embedding - An embedding layer that is initialized with torch.nn.Embedding
+fc1 - A linear transformation that connects the embedding layer to the hidden layer.
+torch.nn.functional.relu activation should be applied to the output of fc1.
+fc2 - A linear transformation that connects the activation of fc1 to a tensor of length vocab_size.
+</code></pre>
+<p>The training data (i.e., the features X, the labels y) that we will use to train the CBOW model will be:</p>
+<pre><code>X will be a tensor of length (2 * window_size) containing the indices of all words in the window
+before and after the focal word.
+y, (the label that our model is trying to predict) should be a list containing the index of the focal word.
+</code></pre>
+<p>Note that a single review in our data will produce multiple items of training data. For example, suppose a single review is:</p>
+<p>&quot;the food was not good at all&quot;</p>
+<p>If our window_size = 2, then this would generate the following (context, focal_word) training data tuples:</p>
+<pre><code>(['the','food','not','good'], ['was']) # 'was' is the focal word
+(['food','was','good','at'], ['not']) # 'not' is the focal word
+(['was','not','at','all'],['good']) # 'good' is the focal word
+</code></pre>
+<p>However, we can't directly use these tuples to train our model. First we have to replace each word with a unique integer (its index) and then convert these to pytorch tensors. Note that, we will be using a special embedding layer (torch.nn.Embedding) which will convert these indexes to the one-hot vectors that are described in the videos.</p>
+<p>To get tensors from the original data, you will need to:</p>
+<pre><code>Create a list (or set) of all unique words in the cleaned text, called vocab.
+Create a dictionary called word_to_index where the key is a word and the value is the index of a
+word (a unique number for each word). You will have to figure out how to create this dictionary from the
+cleaned dataset.
+Write a function make_cbow_data that accepts a single review from cleaned_text as an input and
+outputs a list of tuples where:
+the first part of the tuple contains a tensor of the indices of words in the window before and after
+each focal word
+the second part of the tuple is a tensor containing the index of the focal word.
+The dtype of both tensors in the tuple should be torch.long.
+You will have to figure out how to create multiple tuples of tensors from a single review (an item
+from cleaned_text) using loops
+</code></pre>
+<h6>V</h6>
+<h6>t</h6>
+<h6>t t</h6>
+<h6>N</h6>
+<p>We will use restaurant customer reviews data for this assignment.</p>
+<p><strong>Do not change the code block below</strong>. Below is a function that cleans up the text of a review and returns a list of all the words in the review.</p>
+<p>You will use cleaned_text, which is defined below, to create a training dataset for your CBOW model.</p>
+<p>In [0]:</p>
+<p><em># DO NOT CHANGE THIS CODEBLOCK</em> <strong>import pandas as pd import string</strong></p>
+<p><strong>def</strong> clean_text(text): x = text.translate(str.maketrans('', '', string.punctuation)) <em># remove punct uation</em> x = x.lower().split() <em># lower case and split by whitespace to differentiate words</em> <strong>return</strong> x</p>
+<p>example_text = pd.read_csv('https://raw.githubusercontent.com/dylanwalker/BA865/ master/datasets/hw3.csv') cleaned_text = example_text.Review[: 100 ].apply(clean_text)</p>
+<h4>Create a CBOW Class</h4>
+<p>The first step is to create vocab and word_to_index according to the instructions above.</p>
+<p>In [0]:</p>
+<p><em>#Create your vocab here</em></p>
+<p><em>#Create your word_to_index dictionary here</em></p>
+<p>Now define your make_cbow_data() function. It should take text (text of a single review) as an argument, and window_size (the number of words to the left or right of the focal word) as an argument. It may also take other arguments, depending on how you define it. It should return a list of tuples as described above.</p>
+<p>In [0]:</p>
+<p><em># Define your make_cbow_data function here (it should accept arguments: text, wi ndow_size -- and possibly other arguments depending on how you define it)</em></p>
+<p>Now define your CBOW model class.</p>
+<p>In [0]:</p>
+<p><em># Define your CBOW model here</em></p>
+<h4>Train the CBOW model</h4>
+<p>Now that your model class is written, you must create an instance of the model and train it using the loss function torch.nn.CrossEntropyLoss on the output of fc2 and y (the labels).</p>
+<p>Train your CBOW model for 300 epochs with embed_dim= 100, window_size=2, and hidden_dim=30.</p>
+<pre><code>Do not split the data into training and test sets (we will not be evaluating the performance of this model).
+Use the SGD optimizer with learning rate = 0.001.
+Append the loss at every epoch to a list (return the list if you use a function to fit your model), so that we
+can plot it later.
+</code></pre>
+<p>In [0]:</p>
+<p><em># Parameters</em> VOCAB_SIZE = len(vocab) EMBED_DIM = 100 WINDOW_SIZE = 2 HIDDEN_DIM = 30 N_EPOCHS = 300</p>
+<p><em># Train your CBOW model here</em></p>
+<h4>Plot losses by epochs (x-axis: epoch, y-axis: loss)</h4>
+<p>In [0]:</p>
+<p><em># Insert your code here to plot losses vs epoch</em></p>
+<h4>Print five most similar words with the word &quot;delicious&quot;</h4>
+<p>The whole point of traiing an embedding model is to get an embedding vector for each word. The idea is that the vector somehow captures the meaning of the word. This is useful because data scientists often face scenar<a href="/tag/ios代写/" title="ios代写 代写ios swift代写 移动开发 苹果代写"> ios </a>where they must derive meaning from unstructured text data.</p>
+<p>Once your model has been trained, you can access the embedding vectors through model.embedding.weight.data. You can convert these vectors to a numpy matrix or numpy arrays if needed.</p>
+<p>Find the five most similar words with the word &quot;delicious&quot; by calculating cosine similarity between the embedding vector of &quot;delicious&quot; and the embedding vectors of all other words in the vocabulary.</p>
+<p>Hint: cosine similarity is a common metric so you should be able to find one that you can use in an existing library.</p>
+<p>In [0]:</p>
+<p><em># Insert your code here</em></p>
+<p>While the model learns embedding vectors (that best predict the focal word from its contexts), the vectors that it learns don't seem to truly capture the meaning of words. However, this is mainly due to the small size of our training data. Google trained a word2vec model based on large-scale data (about 100 billion words), and this model captures similarity between words well. You can find the pretrained model at https://code.google.com/archive/p/word2vec/ (https://code.google.com/archive/p/word2vec/).</p>
