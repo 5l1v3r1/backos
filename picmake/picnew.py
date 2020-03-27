@@ -13,7 +13,7 @@ h_h1 = 8*step
 h_h2 = 3*step
 h_h3 = 2*step
 RGBbg = (220,220,220)
-fontstr = "Phetsarath_OT.ttf"
+fontstr = "phetsarath_ot.ttf"
 techbox = ["Algorithm","DataStructure","ComputerNetwork","AI","MachineLearning","Operation System","Statistics","Cyber Security","Data Mining","Big Data","Math","Compilation"," C ","C++","Java","Python","Scala",
 "Matlab","C#"," R ","Javascript","Go","Ruby","Linux Shell","Perl","Multi-thread","Database","Mysql","Oracle","Nosql","Mongodb","Postgresql","Haskhell","Racket","Scheme","Prolog","X86",
 "Mips","Arm","Assembly","Lc3","Php","Nodejs","Java Web","Flask","Django","ReactJS","Vue","Anjularjs","Asp","Ajax","D3.js","Ruby on rails","Tkinter","Pyqt","Unity3D","Java Swing","JavaFx",
@@ -297,11 +297,13 @@ conn.text_factory = str
 cursor = conn.cursor()
 cursor.execute('select * from pdftags')
 values = cursor.fetchall()
+'''
 for item in values:
     print("# Handle with " + item[1])
-    main(item[1])
+    break
+    #main(item[1])
 '''
 for name in textbox2:
     print("# Handle with " + name)
     main(name)
-'''
+    break
