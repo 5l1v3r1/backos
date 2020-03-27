@@ -292,18 +292,23 @@ def main(maintext):
     bgimg.save('output/out.png')   
     
 #main(name)
+prefix = "/wp-content/uploads/2019/08/"
 conn = sqlite3.connect('../sendWP.db')
 conn.text_factory = str
 cursor = conn.cursor()
-cursor.execute('select * from pdftags')
+cursor.execute('select * from pdftags where imgurl is NULL')
 values = cursor.fetchall()
-'''
+
 for item in values:
     print("# Handle with " + item[1])
+    cursor.execute("UPDATE pdftags SET imgurl=? WHERE id=?", (prefix +item[1] + ".png", item[0]))
+    conn.commit()
     break
     #main(item[1])
+conn.close()
 '''
 for name in textbox2:
     print("# Handle with " + name)
     main(name)
     break
+'''
